@@ -1,16 +1,11 @@
-const config = require("../config");
-const express = require("express");
-const bodyParser = require("body-parser");
 const { OpenAI } = require("openai");
-
-const app = express();
-app.use(bodyParser.json());
+const config = require("../../config");
 
 const openai = new OpenAI({
   apiKey: config.openaiApiKey,
 });
 
-app.post("/data", async (req, res) => {
+const handleIngridientsRequest = async (req, res) => {
   const { ingredients } = req.body;
 
   if (!ingredients) {
@@ -27,16 +22,13 @@ app.post("/data", async (req, res) => {
     });
 
     const messageContent = response.choices[0].message.content;
+    console.log("message:", messageContent);
 
     res.json({ message: messageContent });
-
   } catch (error) {
     console.error(error);
     res.status(500).send("Error communicating with OpenAI");
   }
-});
+};
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+module.exports = { handleIngridientsRequest };
